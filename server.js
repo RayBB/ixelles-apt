@@ -74,7 +74,7 @@ fastify.get('/nextDate', async (request, reply) => {
   
   const nextDate = await getNextDate();
   const lastUpdated = Date().toString().split(" GMT")[0];
-  return { nextDate, lastUpdated }
+  return { nextDate, lastUpdated };
 })
 
 /**
@@ -91,8 +91,8 @@ fastify.get("/", async (request, reply) => {
   - SEO values for front-end UI but not for raw data
   */
   let params = request.query.raw ? {} : { seo: seo };
-  params.nextDate = await getNextDate();
-  params.lastUpdated = Date().toString().split(" GMT")[0];
+  // params.nextDate = await getNextDate();
+  // params.lastUpdated = Date().toString().split(" GMT")[0];
 
   // Get the available choices from the database
   const options = await db.getOptions();

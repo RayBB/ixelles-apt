@@ -2,12 +2,6 @@
 
   <head>
 
-    <!-- 
-    This is the main Handlebars template for the site 
-    - When the user visits the homepage or submits a choice the app calls the endpoints in server.js
-    - The server script passes data in here and the Handlebars code builds it into the HTML page
-  -->
-
     <meta charset="utf-8" />
     <link rel="icon" href="https://glitch.com/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -28,7 +22,7 @@
     <link rel="stylesheet" href="/style.css" />
 
     <!-- Show choice chart on poll submission -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!--     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript">
       /* The chart uses chart.js - try tweaking the config!
       https://www.chartjs.org/docs/3.0.2/charts/doughnut.html We pass the
@@ -46,7 +40,7 @@
       fill: true, hoverOffset: 12, cutout: "60%" }] }, options: { plugins: {
       legend: { display: true, position: "bottom", labels: { padding: 24 } } },
       layout: { padding: 24 } } }); }
-    </script>
+    </script> -->
 
   </head>
 
@@ -68,10 +62,10 @@
     </div>
   </body>
   <script>
-    fetch("https://ixelles-apt.glitch.me/nextDate") .then((response) =>
-    response.json()) .then((data) => {console.log(data);
-    document.querySelector("#nextDate").innerHTML = data.nextDate;
-    document.querySelector("#lastUpdated").innerHTML = data.lastUpdated;});
+    fetch("https://ixelles-apt.glitch.me/nextDate").then((response)=>response.json())
+      .then((data) => { console.log(data);
+                       document.querySelector("#nextDate").innerHTML = data.nextDate;
+                       document.querySelector("#lastUpdated").innerHTML = data.lastUpdated;} );
   </script>
 
 </html>
