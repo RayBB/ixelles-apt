@@ -92,8 +92,16 @@
   <div class="wrapper">
     <div class="content" role="main">
 
-      <!-- This is the start of content for our page -->
-      <h1>Hello SQLite!</h1>
+      
+      <h1>Ixelles Apts</h1>
+      <h2>
+         {{{ nextDate }}}
+      </h2>
+      <h3>
+        Last Updated: {{{ lastUpdated }}}
+      </h3>
+      <a href="https://rdv-afs.ixelles.be/qmaticwebbooking/#/">Book it</a>
+<!--       
       <p>
         A poll built with Chart.js and powered by Node.js with a {{seo.db}} database.
       </p>
@@ -103,7 +111,7 @@
       </p>
       
       {{else}}
-      <!-- Server returns a flag when the user has submitted a choice and we show the results -->
+      
       
       {{#if results}}
       <h2>
@@ -114,13 +122,13 @@
           Submissions so far (see the <a href="/logs">Admin</a> page for a log):
         </p>
         <p>
-          <!-- Pass arrays from the API to the chart script in page head -->
+          
           <canvas id="myChart"></canvas>
           <script type="text/javascript">
             showChart("{{{ optionNames }}}".split(","), "{{{ optionCounts }}}".split(","));
           </script>
         </p>
-        <!-- If the user hasn't already made a choice we show the poll -->
+        
       </div>
       
       {{else}}
@@ -131,9 +139,9 @@
         <p>
           What do you like coding most?
         </p>
-        <!-- Call the server post endpoint when the user submits an option in the poll -->
+        
         <form method="post" action="/">
-          <!-- The server script returns the list of language options to offer in the poll -->
+          
           {{#each optionNames}}
           <input type="radio" id="{{this}}" name="language" value="{{this}}" required />
           <label for="{{this}}">{{this}}</label>
@@ -143,13 +151,13 @@
             Submit
           </button>
         </form>
-        <!-- ADD LINK FROM TODO -->
+        
         
       </div>
       {{/if}}
       {{/if}}
 
-      <!-- Instructions on using this project -->
+      
       <div class="instructions">
         <h2>
           Using this project
@@ -161,7 +169,7 @@
 
     </div>
   </div>
-  <!-- The footer holds our remix button — you can use it for structure or cut it out ✂ -->
+  
   <footer class="footer">
     <div class="links"></div>
     <a href="/">Home</a>
@@ -172,7 +180,7 @@
         alt="" />
       Remix on Glitch
     </a>
-  </footer>
+  </footer> -->
 </body>
 
 </html>

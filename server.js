@@ -10,6 +10,8 @@
 // Utilities we need
 const fs = require("fs");
 const path = require("path");
+const axios = require("axios");
+
 
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
@@ -43,6 +45,30 @@ if (seo.url === "glitch-default") {
 const data = require("./src/data.json");
 const db = require("./src/" + data.database);
 
+
+
+const baseUrl =
+  "https://rdv-afs.ixelles.be/qmaticwebbooking/rest/schedule/branches/";
+const branch =
+  "2a94f84c6d99376986e4fc91342dad52dd69ec2b1fffb14fef79a1c50738e3db";
+const servicePublicId =
+  "21b59b2bbbbdc01547bb693e0b815f5e49fd14d96734bbc79331422f285f7ad9";
+const customSlotLength = "10";
+
+const finalURL = `${baseUrl}${branch}/dates;servicePublicId=${servicePublicId};customSlotLength=${customSlotLength}`;
+
+async function getNextDate() {
+  try {
+    const response = await axios.get(finalURL);
+    console.log(response);
+    const nextDate = response.data[0].date;
+    console.log(nextDate);
+    return nextDate;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 /**
  * Home route for the app
  *
@@ -57,6 +83,8 @@ fastify.get("/", async (request, reply) => {
   - SEO values for front-end UI but not for raw data
   */
   let params = request.query.raw ? {} : { seo: seo };
+  params.nextDate = await getNextDate();
+  params.
 
   // Get the available choices from the database
   const options = await db.getOptions();
@@ -140,7 +168,7 @@ fastify.get("/logs", async (request, reply) => {
  */
 fastify.post("/reset", async (request, reply) => {
   let params = request.query.raw ? {} : { seo: seo };
-
+d
   /* 
   Authenticate the user request by checking against the env key variable
   - make sure we have a key in the env and body, and that they match
