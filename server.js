@@ -69,6 +69,14 @@ async function getNextDate() {
   }
 }
 
+// Declare a route
+fastify.get('/nextDate', async (request, reply) => {
+  
+  const nextDate = await getNextDate();
+  const lastUpdated = Date().toString().split(" GMT")[0];
+  return { nextDate, lastUpdated }
+})
+
 /**
  * Home route for the app
  *
@@ -84,7 +92,7 @@ fastify.get("/", async (request, reply) => {
   */
   let params = request.query.raw ? {} : { seo: seo };
   params.nextDate = await getNextDate();
-  params.
+  params.lastUpdated = Date().toString().split(" GMT")[0];
 
   // Get the available choices from the database
   const options = await db.getOptions();
