@@ -50,9 +50,14 @@
 
         <h1>Ixelles Apts</h1>
         <h2>
-          Next Apt:
-          <span id="nextDate">{{{nextDate}}}</span>
+          Next Premier Apt:
+          <span id="nextDate_premier">{{{nextDate}}}</span>
         </h2>
+        <h2>
+          Next ABC Apt:
+          <span id="nextDate_abc">{{{nextDate}}}</span>
+        </h2>
+        
         <h3>
           Last Updated:
           <span id="lastUpdated">{{{lastUpdated}}}</span>
@@ -62,9 +67,14 @@
     </div>
   </body>
   <script>
-    fetch("https://ixelles-apt.glitch.me/nextDate").then((response)=>response.json())
+    fetch("https://ixelles-apt.glitch.me/nextDate/abc").then((response)=>response.json())
       .then((data) => { console.log(data);
-                       document.querySelector("#nextDate").innerHTML = data.nextDate;
+                       document.querySelector("#nextDate_abc").innerHTML = data.nextDate;
+                       document.querySelector("#lastUpdated").innerHTML = data.lastUpdated;} );
+    
+    fetch("https://ixelles-apt.glitch.me/nextDate/premier").then((response)=>response.json())
+      .then((data) => { console.log(data);
+                       document.querySelector("#nextDate_premier").innerHTML = data.nextDate;
                        document.querySelector("#lastUpdated").innerHTML = data.lastUpdated;} );
   </script>
 

@@ -12,7 +12,6 @@ const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
 
-
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
   // Set this to true for detailed logging:
@@ -45,21 +44,37 @@ if (seo.url === "glitch-default") {
 const data = require("./src/data.json");
 const db = require("./src/" + data.database);
 
-
-
 const baseUrl =
   "https://rdv-afs.ixelles.be/qmaticwebbooking/rest/schedule/branches/";
-const branch =
-  "2a94f84c6d99376986e4fc91342dad52dd69ec2b1fffb14fef79a1c50738e3db";
-const servicePublicId =
-  "21b59b2bbbbdc01547bb693e0b815f5e49fd14d96734bbc79331422f285f7ad9";
-const customSlotLength = "10";
 
-const finalURL = `${baseUrl}${branch}/dates;servicePublicId=${servicePublicId};customSlotLength=${customSlotLength}`;
+function constructURL(branch, servicePublicId, customSlotLength) {
+  return `${baseUrl}${branch}/dates;servicePublicId=${servicePublicId};customSlotLength=${customSlotLength}`;
+}
 
-async function getNextDate() {
+function getABCUrl() {
+  /// Demande d'obtention d'un titre de séjour (A, B, C, D, EU, EU+,, F, F+, H, , I, J, K, L, M)
+  const branch =
+    "2a94f84c6d99376986e4fc91342dad52dd69ec2b1fffb14fef79a1c50738e3db";
+  const servicePublicId =
+    "21b59b2bbbbdc01547bb693e0b815f5e49fd14d96734bbc79331422f285f7ad9";
+  const customSlotLength = "10";
+  return constructURL(branch, servicePublicId, customSlotLength);
+}
+
+function getPremierUrl() {
+  /// Première inscription d'un citoyen non membre de l'UE
+  const branch =
+    "2a94f84c6d99376986e4fc91342dad52dd69ec2b1fffb14fef79a1c50738e3db";
+  const servicePublicId =
+    "8562bfb3c40332a888ceca9d7e8f2922b911f7e17dbf25268b3b5ea706b79d71";
+  const customSlotLength = "15";
+  return constructURL(branch, servicePublicId, customSlotLength);
+}
+
+
+async function getNextDate(url) {
   try {
-    const response = await axios.get(finalURL);
+    const response = await axios.get(url);
     console.log(response);
     const nextDate = response.data[0].date;
     console.log(nextDate);
@@ -70,12 +85,19 @@ async function getNextDate() {
 }
 
 // Declare a route
-fastify.get('/nextDate', async (request, reply) => {
-  
-  const nextDate = await getNextDate();
+fastify.get("/nextDate/abc", async (request, reply) => {
+  const nextDate = await getNextDate(getABCUrl());
   const lastUpdated = Date().toString().split(" GMT")[0];
   return { nextDate, lastUpdated };
-})
+});
+
+
+// Declare a route
+fastify.get("/nextDate/premier", async (request, reply) => {
+  const nextDate = await getNextDate(getPremierUrl());
+  const lastUpdated = Date().toString().split(" GMT")[0];
+  return { nextDate, lastUpdated };
+});
 
 /**
  * Home route for the app
@@ -176,7 +198,7 @@ fastify.get("/logs", async (request, reply) => {
  */
 fastify.post("/reset", async (request, reply) => {
   let params = request.query.raw ? {} : { seo: seo };
-d
+  d;
   /* 
   Authenticate the user request by checking against the env key variable
   - make sure we have a key in the env and body, and that they match
