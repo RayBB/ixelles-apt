@@ -49,6 +49,7 @@
       <div class="content" role="main">
 
         <h1>Ixelles Apts</h1>
+        <span>
         <h2>
           Next Premier Apt:
           <span id="nextDate_premier">{{{nextDate}}}</span>
@@ -57,25 +58,34 @@
           Next ABC Apt:
           <span id="nextDate_abc">{{{nextDate}}}</span>
         </h2>
-        
+        </span>
         <h3>
           Last Updated:
           <span id="lastUpdated">{{{lastUpdated}}}</span>
         </h3>
         <a href="https://rdv-afs.ixelles.be/qmaticwebbooking/#/">Book it</a>
+        <hr>
+        <button id="refresh" onclick="console.log('hi');getNewDataAndDisplay();">
+          refresh
+        </button>
       </div>
     </div>
   </body>
   <script>
-    fetch("https://ixelles-apt.glitch.me/nextDate/abc").then((response)=>response.json())
-      .then((data) => { console.log(data);
-                       document.querySelector("#nextDate_abc").innerHTML = data.nextDate;
-                       document.querySelector("#lastUpdated").innerHTML = data.lastUpdated;} );
-    
-    fetch("https://ixelles-apt.glitch.me/nextDate/premier").then((response)=>response.json())
-      .then((data) => { console.log(data);
-                       document.querySelector("#nextDate_premier").innerHTML = data.nextDate;
-                       document.querySelector("#lastUpdated").innerHTML = data.lastUpdated;} );
+    function getNewDataAndDisplay(){
+        console.log("getting new data");
+        fetch("/nextDate/abc").then((response)=>response.json())
+          .then((data) => { console.log(data);
+                           document.querySelector("#nextDate_abc").innerHTML = data.nextDate;
+                           document.querySelector("#lastUpdated").innerHTML = data.lastUpdated;} );
+
+        fetch("/nextDate/premier").then((response)=>response.json())
+          .then((data) => { console.log(data);
+                           document.querySelector("#nextDate_premier").innerHTML = data.nextDate;
+                           document.querySelector("#lastUpdated").innerHTML = data.lastUpdated;} );
+      }
+    getNewDataAndDisplay();
+    setInterval(getNewDataAndDisplay, 60000)
   </script>
 
 </html>
