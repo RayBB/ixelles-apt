@@ -8,10 +8,9 @@
  */
 
 // Utilities we need
-const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
-const ixelles = require("./ixelles.js")
+const ixelles = require("./ixelles.js");
 
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
@@ -41,43 +40,24 @@ if (seo.url === "glitch-default") {
   seo.url = `https://${process.env.PROJECT_DOMAIN}.glitch.me`;
 }
 
-async function getDateJson(aptType){
+async function getDateJson(aptType) {
   const nextDate = await ixelles.getNextDate(ixelles.appointmentTypes.abc);
   const lastUpdated = Date().toString().split(" GMT")[0];
   return { nextDate, lastUpdated };
 }
 
-// Declare a route
-fastify.get("/nextDate/abc", async (request, reply) => {
-  return getDateJson(ixelles.appointmentTypes.abc);
-});
-
-
-// Declare a route
-fastify.get("/nextDate/premier", async (request, reply) => getDateJson(ixelles.appointmentTypes.premier);
+// These are the routes for the two types of appointments
+fastify.get("/nextDate/abc", async (request, reply) =>
+  getDateJson(ixelles.appointmentTypes.abc)
 );
 
-/**
- * Home route for the app
- *
- * Return the poll options from the database helper script
- * The home route may be called on remix in which case the db needs setup
- *
- * Client can request raw data using a query parameter
- */
+fastify.get("/nextDate/premier", async (request, reply) =>
+  getDateJson(ixelles.appointmentTypes.premier)
+);
+
 fastify.get("/", async (request, reply) => {
-  /* 
-  Params is the data we pass to the client
-  - SEO values for front-end UI but not for raw data
-  */
-  let params = request.query.raw ? {} : { seo: seo };
-
-  // Send the page options or raw JSON data if the client requested it
-  return request.query.raw
-    ? reply.send(params)
-    : reply.view("/src/pages/index.hbs", params);
+  return reply.view("/src/pages/index.hbs");
 });
-
 
 // Run the server and report out to the logs
 fastify.listen(
