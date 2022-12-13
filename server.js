@@ -11,6 +11,7 @@
 const fs = require("fs");
 const path = require("path");
 const axios = require("axios");
+const ixelles = require("./ixelles.js")
 
 // Require the fastify framework and instantiate it
 const fastify = require("fastify")({
@@ -41,11 +42,13 @@ if (seo.url === "glitch-default") {
 }
 
 // We use a module for handling database operations in /src
-const data = require("./src/data.json");
-const db = require("./src/" + data.database);
+// const data = require("./src/data.json");
+// const db = require("./src/" + data.database);
 
 const baseUrl =
   "https://rdv-afs.ixelles.be/qmaticwebbooking/rest/schedule/branches/";
+const branch =
+  "2a94f84c6d99376986e4fc91342dad52dd69ec2b1fffb14fef79a1c50738e3db";
 
 function constructURL(branch, servicePublicId, customSlotLength) {
   return `${baseUrl}${branch}/dates;servicePublicId=${servicePublicId};customSlotLength=${customSlotLength}`;
@@ -53,8 +56,6 @@ function constructURL(branch, servicePublicId, customSlotLength) {
 
 function getABCUrl() {
   /// Demande d'obtention d'un titre de séjour (A, B, C, D, EU, EU+,, F, F+, H, , I, J, K, L, M)
-  const branch =
-    "2a94f84c6d99376986e4fc91342dad52dd69ec2b1fffb14fef79a1c50738e3db";
   const servicePublicId =
     "21b59b2bbbbdc01547bb693e0b815f5e49fd14d96734bbc79331422f285f7ad9";
   const customSlotLength = "10";
@@ -63,8 +64,6 @@ function getABCUrl() {
 
 function getPremierUrl() {
   /// Première inscription d'un citoyen non membre de l'UE
-  const branch =
-    "2a94f84c6d99376986e4fc91342dad52dd69ec2b1fffb14fef79a1c50738e3db";
   const servicePublicId =
     "8562bfb3c40332a888ceca9d7e8f2922b911f7e17dbf25268b3b5ea706b79d71";
   const customSlotLength = "15";
@@ -113,23 +112,6 @@ fastify.get("/", async (request, reply) => {
   - SEO values for front-end UI but not for raw data
   */
   let params = request.query.raw ? {} : { seo: seo };
-  // params.nextDate = await getNextDate();
-  // params.lastUpdated = Date().toString().split(" GMT")[0];
-
-  // Get the available choices from the database
-  const options = await db.getOptions();
-  if (options) {
-    params.optionNames = options.map((choice) => choice.language);
-    params.optionCounts = options.map((choice) => choice.picks);
-  }
-  // Let the user know if there was a db error
-  else params.error = data.errorMessage;
-
-  // Check in case the data is empty or not setup yet
-  if (options && params.optionNames.length < 1)
-    params.setup = data.setupMessage;
-
-  // ADD PARAMS FROM TODO HERE
 
   // Send the page options or raw JSON data if the client requested it
   return request.query.raw
@@ -137,100 +119,6 @@ fastify.get("/", async (request, reply) => {
     : reply.view("/src/pages/index.hbs", params);
 });
 
-/**
- * Post route to process user vote
- *
- * Retrieve vote from body data
- * Send vote to database helper
- * Return updated list of votes
- */
-fastify.post("/", async (request, reply) => {
-  // We only send seo if the client is requesting the front-end ui
-  let params = request.query.raw ? {} : { seo: seo };
-
-  // Flag to indicate we want to show the poll results instead of the poll form
-  params.results = true;
-  let options;
-
-  // We have a vote - send to the db helper to process and return results
-  if (request.body.language) {
-    options = await db.processVote(request.body.language);
-    if (options) {
-      // We send the choices and numbers in parallel arrays
-      params.optionNames = options.map((choice) => choice.language);
-      params.optionCounts = options.map((choice) => choice.picks);
-    }
-  }
-  params.error = options ? null : data.errorMessage;
-
-  // Return the info to the client
-  return request.query.raw
-    ? reply.send(params)
-    : reply.view("/src/pages/index.hbs", params);
-});
-
-/**
- * Admin endpoint returns log of votes
- *
- * Send raw json or the admin handlebars page
- */
-fastify.get("/logs", async (request, reply) => {
-  let params = request.query.raw ? {} : { seo: seo };
-
-  // Get the log history from the db
-  params.optionHistory = await db.getLogs();
-
-  // Let the user know if there's an error
-  params.error = params.optionHistory ? null : data.errorMessage;
-
-  // Send the log list
-  return request.query.raw
-    ? reply.send(params)
-    : reply.view("/src/pages/admin.hbs", params);
-});
-
-/**
- * Admin endpoint to empty all logs
- *
- * Requires authorization (see setup instructions in README)
- * If auth fails, return a 401 and the log list
- * If auth is successful, empty the history
- */
-fastify.post("/reset", async (request, reply) => {
-  let params = request.query.raw ? {} : { seo: seo };
-  d;
-  /* 
-  Authenticate the user request by checking against the env key variable
-  - make sure we have a key in the env and body, and that they match
-  */
-  if (
-    !request.body.key ||
-    request.body.key.length < 1 ||
-    !process.env.ADMIN_KEY ||
-    request.body.key !== process.env.ADMIN_KEY
-  ) {
-    console.error("Auth fail");
-
-    // Auth failed, return the log data plus a failed flag
-    params.failed = "You entered invalid credentials!";
-
-    // Get the log list
-    params.optionHistory = await db.getLogs();
-  } else {
-    // We have a valid key and can clear the log
-    params.optionHistory = await db.clearHistory();
-
-    // Check for errors - method would return false value
-    params.error = params.optionHistory ? null : data.errorMessage;
-  }
-
-  // Send a 401 if auth failed, 200 otherwise
-  const status = params.failed ? 401 : 200;
-  // Send an unauthorized status code if the user credentials failed
-  return request.query.raw
-    ? reply.status(status).send(params)
-    : reply.status(status).view("/src/pages/admin.hbs", params);
-});
 
 // Run the server and report out to the logs
 fastify.listen(
