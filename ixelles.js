@@ -12,23 +12,29 @@ function constructURL(branch, servicePublicId, customSlotLength) {
   return `${baseUrl}${branch}/dates;servicePublicId=${servicePublicId};customSlotLength=${customSlotLength}`;
 }
 
-function getABCUrl() {
+const appointmentTypes = {
   /// Demande d'obtention d'un titre de séjour (A, B, C, D, EU, EU+,, F, F+, H, , I, J, K, L, M)
-  const servicePublicId =
-    "21b59b2bbbbdc01547bb693e0b815f5e49fd14d96734bbc79331422f285f7ad9";
-  const customSlotLength = "10";
-  return constructURL(branch, servicePublicId, customSlotLength);
-}
+  abc: {
+    servicePublicId:
+      "21b59b2bbbbdc01547bb693e0b815f5e49fd14d96734bbc79331422f285f7ad9",
+    customSlotLength: "10",
+  },
 
-function getPremierUrl() {
   /// Première inscription d'un citoyen non membre de l'UE
-  const servicePublicId =
-    "8562bfb3c40332a888ceca9d7e8f2922b911f7e17dbf25268b3b5ea706b79d71";
-  const customSlotLength = "15";
-  return constructURL(branch, servicePublicId, customSlotLength);
+  premier: {
+    servicePublicId:
+      "8562bfb3c40332a888ceca9d7e8f2922b911f7e17dbf25268b3b5ea706b79d71",
+    customSlotLength: "15",
+  },
+};
+
+
+function createURLfromAppointmentType(apt) {
+  return constructURL(branch, apt.servicePublicId, apt.customSlotLength);
 }
 
-async function getNextDate(url) {
+async function getNextDate(apt) {
+  const url = createURLfromAppointmentType(apt);
   try {
     const response = await axios.get(url);
     console.log(response);
@@ -39,3 +45,8 @@ async function getNextDate(url) {
     console.error(error);
   }
 }
+
+module.exports = {
+  getNextDate,
+  appointmentTypes
+};
