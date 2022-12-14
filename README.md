@@ -1,6 +1,9 @@
 # Ixelles Appointments
 
-The purpose of this project is to help you get appointments sooner for the Ixelles municipality in Brussels, Belgium.
+A blog post about this project is here: https://raybb.hashnode.dev/automating-ixelles-appointment-checking
+
+# Purpose
+To help me get appointments sooner for the Ixelles municipality in Brussels, Belgium.
 
 When applying for a residence permit I had to do these two types of appointments.
 
